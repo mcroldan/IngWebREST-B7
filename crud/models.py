@@ -1,4 +1,3 @@
-from django.db import models
 from crud.utils import DBClientMongo
 from IwebDjango.settings import DB_NAME
 from bson.objectid import ObjectId

@@ -1,7 +1,9 @@
 
 from django.urls import path
-from .views import main
+import crud.views
 
 urlpatterns = [
-    path('', main)
+    path('test', crud.views.main),
+    path('list_users', crud.views.get_all_users),
+    path('list_comments', crud.views.get_all_comments)
 ]

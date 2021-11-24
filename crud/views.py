@@ -7,6 +7,46 @@ from crud.models import Comentario
 
 # Create your views here.
 
+def get_all_ids_cursor(_tableName):
+    atributos = {'_id'}
+    if _tableName == 'Comentario':
+        atributos = {'_id', 'autor'}
+
+    bd = DBClientMongo(DB_NAME, _tableName)
+    cursor = bd.find({},atributos)
+    bd.close()
+    return cursor
+
+def get_all_users(request):
+    usuarios = []
+    for doc in get_all_ids_cursor('Usuario'):
+        usuarios.append(Usuario.crearConId(doc['_id']))
+
+    users = []
+    for user in usuarios:
+        users.append(user.serialize())
+    
+    json = ', '.join(users)
+    json = '{' + json + '}'
+    bd = DBClientMongo(DB_NAME, 'Usuario')
+    return HttpResponse(bd.find())
+
+def get_all_comments(request):
+    comentarios = []
+
+    for doc in get_all_ids_cursor('Comentario'):
+        comentarios.append(Comentario.crearConId(doc['_id'], Usuario.crearConId(doc['autor'])))
+
+    comments = []
+    for comment in comentarios:
+        comments.append(comment.serialize())
+    
+    json = ', '.join(comments)
+    json = '{' + json + '}'
+
+    return HttpResponse(json)
+
+
 def main(request):
 
 
