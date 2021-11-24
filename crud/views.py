@@ -4,8 +4,13 @@ from crud.utils import DBClientMongo
 from IwebDjango.settings import DB_NAME
 from crud.models import Usuario
 from crud.models import Comentario
+from django.shortcuts import render
 
 # Create your views here.
+
+def default_map(request):
+    return render(request, 'default.html', {'mapbox_access_token':
+        'pk.eyJ1IjoidGhjcmF2ZW4iLCJhIjoiY2t3ZHd4ZzU5MHlxYTJwbjJkY2pxYWxqdCJ9.XqRLpXF44RI4HXatC7dcAQ'})
 
 def get_all_ids_cursor(_tableName):
     atributos = {'_id'}
