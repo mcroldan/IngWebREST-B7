@@ -1,13 +1,14 @@
-from django.conf.urls import include
-from django.contrib import admin
+
+from typing import ValuesView
 from django.urls import path
-from . import views
-from django.conf.urls import url
 import crud.views
 
 urlpatterns = [
-    url(r'map', views.default_map, name="default"),
     path('test', crud.views.main),
-    path('list_users', crud.views.get_all_users),
-    path('list_comments', crud.views.get_all_comments)
+    path('get/users', crud.views.get_all_users),
+    path('get/comments', crud.views.get_all_comments),
+    path('get/users/<str:var>', crud.views.get_user),
+    path('get/comments/<str:var>', crud.views.get_comment),
+    path('post/users/<str:id>/<str:attr>/<str:newAttr>', crud.views.post_users),
+    path('post/comments/<str:id>/<str:attr>/<str:newAttr>', crud.views.post_users)
 ]
