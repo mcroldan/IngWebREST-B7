@@ -1,9 +1,12 @@
+from os import name
 from django.http.response import HttpResponse
 from django.shortcuts import render
 from crud.utils import DBClientMongo
-from IwebDjango.settings import DB_NAME
+from IwebDjango.settings import DB_NAME, DEBUG
 from crud.models import Usuario
 from crud.models import Comentario
+from bson.objectid import ObjectId
+import ast
 
 # Create your views here.
 
@@ -18,7 +21,7 @@ def get_all_ids_cursor(_tableName):
     return cursor
 
 def get_all_users(request):
-    usuarios = []
+    """usuarios = []
     for doc in get_all_ids_cursor('Usuario'):
         usuarios.append(Usuario.crearConId(doc['_id']))
 
@@ -27,12 +30,14 @@ def get_all_users(request):
         users.append(user.serialize())
     
     json = ', '.join(users)
-    json = '{' + json + '}'
+    json = '{' + json + '}'"""
     bd = DBClientMongo(DB_NAME, 'Usuario')
-    return HttpResponse(bd.find())
+    json = bd.find()
+    bd.close()
+    return HttpResponse(json)
 
 def get_all_comments(request):
-    comentarios = []
+    """comentarios = []
 
     for doc in get_all_ids_cursor('Comentario'):
         comentarios.append(Comentario.crearConId(doc['_id'], Usuario.crearConId(doc['autor'])))
@@ -43,9 +48,41 @@ def get_all_comments(request):
     
     json = ', '.join(comments)
     json = '{' + json + '}'
+"""
+    bd = DBClientMongo(DB_NAME, 'Comentario')
+    json = bd.find()
+    bd.close()
+    return HttpResponse(json)
+
+def get_user(request, var):
+    user = Usuario.crearConId(var)
+    json = user.serialize()
 
     return HttpResponse(json)
 
+def get_comment(request, var):
+    comment = Comentario.crearConId(var)
+    return HttpResponse(comment.serialize())
+
+def post_users(request, id, attr, newAttr):
+    user = Usuario.crearConId(id)
+
+    if (attr == 'name'):
+        user.setName(newAttr)
+    elif (attr == 'surname'):
+        array = newAttr.split(' ')
+        user.setSurname(array)
+    elif (attr == 'address'):
+        user.setAddress(newAttr)
+    return HttpResponse(newAttr)
+
+def post_comments(request, id, attr, newAttr):
+    comment = Comentario.crearConId(id)
+
+    if (attr == 'comentario'):
+        comment.setName(newAttr)
+    return HttpResponse(comment.name)
+    
 
 def main(request):
 

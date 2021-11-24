@@ -57,29 +57,27 @@ class Usuario:
 
 class Comentario:
     def __init__(self, _autor, _comentario, _fecha):
-        self.autor = _autor
+        """"Autor es la ID del autor en formato String"""
+        self.autor = ObjectId(_autor)
         self.comentario = _comentario
         self.fecha = _fecha
         db = DBClientMongo(DB_NAME, 'Comentario')
-        db.insert( [{ 'autor': self.autor._id, 'comentario': self.comentario, 'fecha': self.fecha }] )
+        db.insert( [{ 'autor': self.autor, 'comentario': self.comentario, 'fecha': self.fecha }] )
         self._id = (db.find( {'autor': self.autor._id, 'comentario': self.comentario, 'fecha': self.fecha}, {'_id'}, single=True ))['_id']
         db.close()
 
     @classmethod
-    def crearConId(cls, id, autor):
+    def crearConId(cls, id):
         db = DBClientMongo(DB_NAME, 'Comentario')
         doc = db.find( {'_id': ObjectId(id)}, {'autor', 'comentario', 'fecha'} , single=True)
-        if doc['autor'] == autor._id:
-            obj = cls.__new__(cls)
-            super(Comentario, obj).__init__()
-            obj._id = ObjectId(id)
-            obj.autor = autor
-            obj.comentario = doc['comentario']
-            obj.fecha = doc['fecha']
-            db.close()
-            return obj
-        else:
-            return None
+        obj = cls.__new__(cls)
+        super(Comentario, obj).__init__()
+        obj._id = ObjectId(id)
+        obj.autor = doc['autor']
+        obj.comentario = doc['comentario']
+        obj.fecha = doc['fecha']
+        db.close()
+        return obj
 
     def setComentario(self, _newComentario):
         db = DBClientMongo(DB_NAME, 'Comentario')
@@ -93,7 +91,7 @@ class Comentario:
         db.close()
 
     def serialize(self):
-        dict = { 'autor': self.autor.serialize(), 'comentario': self.comentario, 'fecha': self.fecha }
+        dict = { 'autor': 'http://localhost:8000/crud/get/users/' + self.autor.__str__(), 'comentario': self.comentario, 'fecha': self.fecha }
         return json.dumps(dict)
 
 
