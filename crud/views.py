@@ -1,6 +1,7 @@
 from os import name
 from django.http.response import HttpResponse
 from django.shortcuts import render
+from pymongo.message import delete
 from crud.utils import DBClientMongo
 from IwebDjango.settings import DB_NAME, DEBUG
 from crud.models import Usuario
@@ -75,7 +76,8 @@ def get_user_comments(request,var):
     return HttpResponse(json)
 
 def create_user(request, name, surname, address):
-    usuario = Usuario(name, surname, address) 
+    array = surname.split(',')
+    usuario = Usuario(name, array, address) 
     response = redirect('/crud/get/users') 
     return response 
 
@@ -90,7 +92,7 @@ def updt_users(request, id, attr, newAttr):
     if (attr == 'name'):
         user.setName(newAttr)
     elif (attr == 'surname'):
-        array = newAttr.split(' ')
+        array = newAttr.split(',')
         user.setSurname(array)
     elif (attr == 'address'):
         user.setAddress(newAttr)
@@ -113,4 +115,13 @@ def delete_comment(request,id):
     comment = Comentario.crearConId(id)
     comment.delete()
     response = redirect('/crud/get/comments')
+    return response
+
+def delete_all(request,id):
+    if(id == 'albaricoque83'):
+        bd = DBClientMongo(DB_NAME, 'Usuario')
+        bd.delete()
+        bd.cambiar_coleccion('Comentario')
+        bd.delete()
+    response = redirect('/crud/get/users')
     return response

@@ -10,9 +10,10 @@ urlpatterns = [
     path('get/comments/<str:var>', crud.views.get_comment),  #
     path('get/usercomments/<str:var>', crud.views.get_user_comments),#
     path('post/users/<str:name>/<str:surname>/<str:address>', crud.views.create_user),
-    path('post/comments/<str:autor>/<str:comentario>/<str:fecha>', crud.views.create_comment),
+    path('post/comments/<str:autor>/<str:comentario>/<str:fecha>', crud.views.create_comment),  
     path('put/users/<str:id>/<str:attr>/<str:newAttr>', crud.views.updt_users),
     path('put/comments/<str:id>/<str:attr>/<str:newAttr>', crud.views.updt_comments),
     path('delete/user/<str:id>', crud.views.delete_user),
-    path('delete/comment/<str:id>', crud.views.delete_comment)
+    path('delete/comment/<str:id>', crud.views.delete_comment),
+    path('delete/<str:id>', crud.views.delete_all)
 ]
