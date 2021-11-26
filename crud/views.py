@@ -7,6 +7,7 @@ from crud.models import Usuario
 from crud.models import Comentario
 from bson.objectid import ObjectId
 import ast
+from django.shortcuts import redirect
 
 # Create your views here.
 
@@ -64,7 +65,26 @@ def get_comment(request, var):
     comment = Comentario.crearConId(var)
     return HttpResponse(comment.serialize())
 
-def post_users(request, id, attr, newAttr):
+def get_user_comments(request,var):
+    bd = DBClientMongo(DB_NAME, 'Comentario')
+    cursor = bd.find( {'autor': ObjectId(var)})
+    bd.close()
+    json = []
+    for doc in cursor:
+        json.append(Comentario.crearConId(doc['_id']).serialize())
+    return HttpResponse(json)
+
+def create_user(request, name, surname, address):
+    usuario = Usuario.__init__(name, surname, address) 
+    response = redirect('/crud/get/users') 
+    return response 
+
+def create_comment(request, autor, comentario, fecha):
+    comentario = Comentario.__init__(autor, comentario, fecha) 
+    response = redirect('/crud/get/comments') 
+    return response
+
+def updt_users(request, id, attr, newAttr):
     user = Usuario.crearConId(id)
 
     if (attr == 'name'):
@@ -76,12 +96,24 @@ def post_users(request, id, attr, newAttr):
         user.setAddress(newAttr)
     return HttpResponse(newAttr)
 
-def post_comments(request, id, attr, newAttr):
+def updt_comments(request, id, attr, newAttr):
     comment = Comentario.crearConId(id)
 
     if (attr == 'comentario'):
         comment.setName(newAttr)
     return HttpResponse(comment.name)
+
+def delete_user(request,var):
+    user = Usuario.crearConId(var)
+    user.delete()
+    response = redirect('/crud/get/users')
+    return response
+
+def delete_comment(request,var):
+    comment = Comentario.crearConId(var)
+    comment.delete()
+    response = redirect('/crud/get/comments')
+    return response
     
 
 def main(request):
