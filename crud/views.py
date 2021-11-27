@@ -126,14 +126,20 @@ def delete_all(request,id):
         bd.delete()
     response = redirect('/crud/get/users')
     return response
-    
-def map(request, lat, lon, radius):
+
+def get_json(request):
     req = urllib.request.Request(url="https://datosabiertos.malaga.eu/recursos/aparcamientos/ocupappublicosmun/ocupappublicosmunfiware.json", headers={"User-Agent": "Mozilla/5.0"})
+    handler = urllib.request.urlopen(req)
+    data = json.loads(handler.read().decode())
+    return data
+    
+def get_aparcamientos(request, lat, lon, radius):
+    data = get_json(request)
+
     latF = float(lat) 
     lonF = float(lon)
     source = [latF, lonF]
-    handler = urllib.request.urlopen(req)
-    data = json.loads(handler.read().decode())
+
     locations = []
     for aparcamiento in data:
         locations.append(aparcamiento['location'])
@@ -142,4 +148,27 @@ def map(request, lat, lon, radius):
         if location.get('value').get('coordinates')[0] != 0.0 and location.get('value').get('coordinates')[1] != 0.0:
             points.append(location.get('value').get('coordinates'))
     context = {'points' : json.dumps(points), 'source' : json.dumps(source), 'radius' : radius}
-    return render(request, "leaflet.html", context)
+    return render(request, "aparcamientos_radio.html", context)
+
+def get_aparcamiento_cercano(request, lat, lon):
+    data = get_json(request)
+    latF = float(lat) 
+    lonF = float(lon)
+    source = [latF, lonF]
+    locations = []
+    for aparcamiento in data:
+        locations.append(aparcamiento['location'])
+    point = []
+    for location in locations:
+        print(location)
+        latP = float(location.get('value').get('coordinates')[0])
+        lonP = float(location.get('value').get('coordinates')[1])
+        if len(point) == 0  :
+            point = [latP, lonP]
+        else:
+            if latP != 0.0 and lonP != 0.0 and ((abs(latF - latP) + abs(lonF - lonP)) < (abs(latF - point[0]) + abs(lonF - point[1]))):
+                point = [latP, lonP]
+    context = {'point' : json.dumps(point), 'source' : json.dumps(source)}
+    return render(request, "aparcamiento_mas_cercano.html", context)
+
+            
