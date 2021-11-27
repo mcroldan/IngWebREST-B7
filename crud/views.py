@@ -134,6 +134,12 @@ def get_json(request):
     data = json.loads(handler.read().decode())
     return data
 
+def get_json2(request):
+    req = urllib.request.Request(url="https://datosabiertos.malaga.eu/recursos/transporte/trafico/da_cortesTrafico-4326.geojson", headers={"User-Agent": "Mozilla/5.0"})
+    handler = urllib.request.urlopen(req)
+    data = json.loads(handler.read().decode())
+    return data
+
 def get_aparcamientos(request): 
     data = get_json(request)
     points = []
@@ -206,4 +212,56 @@ def get_aparcamiento_cercano(request, lon, lat):
     context = {'point' : json.dumps(point), 'source' : json.dumps(source)}
     return render(request, "aparcamiento_mas_cercano.html", context)
 
-            
+def get_atascos(request): 
+    #distancia entre coordenada y aparcamiento < radio
+    data = get_json2(request)
+
+    locations = []
+    for x in range(data['totalFeatures']):
+        locations.append(data['features'][x]['geometry'])
+    points = []
+    for location in locations:
+        if location.get('coordinates')[0] != 0.0 and location.get('coordinates')[1] != 0.0:
+            points.append(location.get('coordinates'))
+    context = {'points' : json.dumps(points)}
+    return render(request, "atascos.html", context)
+
+def get_atasco_cercano(request, lon, lat):
+    data = get_json2(request)
+    latF = float(lat) 
+    lonF = float(lon)
+    source = [latF, lonF]
+
+    locations = []
+    for x in range(data['totalFeatures']):
+        locations.append(data['features'][x]['geometry'])
+    point = []
+    for location in locations:
+        lonP = float(location.get('coordinates')[0])
+        latP = float(location.get('coordinates')[1])
+        if len(point) == 0  :
+            point = [lonP, latP]
+        else:
+            if latP != 0.0 and lonP != 0.0 and ((abs(latF - latP) + abs(lonF - lonP)) < (abs(latF - point[0]) + abs(lonF - point[1]))):
+                point = [latP, lonP]
+    context = {'point' : json.dumps(point), 'source' : json.dumps(source)}
+    return render(request, "atasco_cercano.html", context)           
+
+def get_atascos_dentro(request, lon, lat, radius): 
+    #distancia entre coordenada y aparcamiento < radio
+    data = get_json2(request)
+    latF = float(lat) 
+    lonF = float(lon)
+    source = [latF, lonF]
+
+    locations = []
+    for x in range(data['totalFeatures']):
+        locations.append(data['features'][x]['geometry'])
+    points = []
+    for location in locations:
+        lon_aparcamiento = float(location.get('coordinates')[1])
+        lat_aparcamiento = float(location.get('coordinates')[0])
+        if lon_aparcamiento != 0.0 and lat_aparcamiento != 0.0 and dentro_perimetro(float(lon_aparcamiento),float(lat_aparcamiento),source,radius):
+            points.append([lat_aparcamiento,lon_aparcamiento])
+    context = {'points' : json.dumps(points), 'source' : json.dumps(source), 'radius' : radius}
+    return render(request, "atascos_radio.html", context)
