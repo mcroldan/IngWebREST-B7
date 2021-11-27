@@ -13,6 +13,7 @@ from crud import templates
 import urllib.request
 from urllib.request import urlopen
 import json
+import math
 
 # Create your views here.
 
@@ -132,9 +133,40 @@ def get_json(request):
     handler = urllib.request.urlopen(req)
     data = json.loads(handler.read().decode())
     return data
-    
-def get_aparcamientos(request, lon, lat, radius): 
+
+def get_aparcamientos(request): 
+    data = get_json(request)
+    points = []
+    locations = []
+    for aparcamiento in data:
+        locations.append(aparcamiento['location'])
+    for location in locations:
+        lon_aparcamiento = float(location.get('value').get('coordinates')[1])
+        lat_aparcamiento = float(location.get('value').get('coordinates')[0])
+        if lon_aparcamiento != 0.0 and lat_aparcamiento != 0.0:
+            points.append([lat_aparcamiento,lon_aparcamiento])
+    context = {'points' : json.dumps(points)}
+    return render(request, "aparcamientos.html", context)
+
+def measure(lat1, lon1, lat2, lon2):  # generally used geo measurement function
+    R = 6378.137; # Radius of earth in KM
+    dLat = lat2 * math.pi / 180 - lat1 * math.pi / 180
+    dLon = lon2 * math.pi / 180 - lon1 * math.pi / 180
+    a = math.sin(dLat/2) * math.sin(dLat/2) + math.cos(lat1 * math.pi / 180) * math.cos(lat2 * math.pi / 180) * math.sin(dLon/2) * math.sin(dLon/2)
+    c = 2 * math.atan2(math.sqrt(a), math.sqrt(1-a))
+    d = R * c
+    return d * 1000; # meters
+
+
+def dentro_perimetro(lon_aparcamiento,lat_aparcamiento,source,radius):
     #distancia entre coordenada y aparcamiento < radio
+    dentro = False
+    distancia = measure(source[0],source[1],lat_aparcamiento,lon_aparcamiento)
+    if(distancia <= radius): 
+        dentro = True 
+    return dentro
+    
+def get_aparcamientos_dentro(request, lon, lat, radius): 
     data = get_json(request)
 
     latF = float(lat) 
@@ -146,8 +178,10 @@ def get_aparcamientos(request, lon, lat, radius):
         locations.append(aparcamiento['location'])
     points = []
     for location in locations:
-        if location.get('value').get('coordinates')[0] != 0.0 and location.get('value').get('coordinates')[1] != 0.0:
-            points.append(location.get('value').get('coordinates'))
+        lon_aparcamiento = float(location.get('value').get('coordinates')[1])
+        lat_aparcamiento = float(location.get('value').get('coordinates')[0])
+        if lon_aparcamiento != 0.0 and lat_aparcamiento != 0.0 and dentro_perimetro(float(lon_aparcamiento),float(lat_aparcamiento),source,radius):
+            points.append([lat_aparcamiento,lon_aparcamiento])
     context = {'points' : json.dumps(points), 'source' : json.dumps(source), 'radius' : radius}
     return render(request, "aparcamientos_radio.html", context)
 
@@ -162,13 +196,13 @@ def get_aparcamiento_cercano(request, lon, lat):
     point = []
     for location in locations:
         print(location)
-        lonP = float(location.get('value').get('coordinates')[0])
-        latP = float(location.get('value').get('coordinates')[1])
+        lon_aparcamiento = float(location.get('value').get('coordinates')[1])
+        lat_aparcamiento = float(location.get('value').get('coordinates')[0])
         if len(point) == 0  :
-            point = [lonP, latP]
+            point = [lat_aparcamiento, lon_aparcamiento]
         else:
-            if latP != 0.0 and lonP != 0.0 and ((abs(latF - latP) + abs(lonF - lonP)) < (abs(latF - point[0]) + abs(lonF - point[1]))):
-                point = [latP, lonP]
+            if lat_aparcamiento != 0.0 and lon_aparcamiento != 0.0 and ((abs(latF - lat_aparcamiento) + abs(lonF - lon_aparcamiento)) < (abs(latF - point[0]) + abs(lonF - point[1]))):
+                point = [lat_aparcamiento, lon_aparcamiento]
     context = {'point' : json.dumps(point), 'source' : json.dumps(source)}
     return render(request, "aparcamiento_mas_cercano.html", context)
 
