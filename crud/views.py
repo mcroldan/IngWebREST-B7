@@ -9,6 +9,10 @@ from crud.models import Comentario
 from bson.objectid import ObjectId
 import ast
 from django.shortcuts import redirect
+from crud import templates
+import urllib.request
+from urllib.request import urlopen
+import json
 
 # Create your views here.
 
@@ -26,7 +30,6 @@ def get_all_users(request):
     """usuarios = []
     for doc in get_all_ids_cursor('Usuario'):
         usuarios.append(Usuario.crearConId(doc['_id']))
-
     users = []
     for user in usuarios:
         users.append(user.serialize())
@@ -40,10 +43,8 @@ def get_all_users(request):
 
 def get_all_comments(request):
     """comentarios = []
-
     for doc in get_all_ids_cursor('Comentario'):
         comentarios.append(Comentario.crearConId(doc['_id'], Usuario.crearConId(doc['autor'])))
-
     comments = []
     for comment in comentarios:
         comments.append(comment.serialize())
@@ -125,3 +126,16 @@ def delete_all(request,id):
         bd.delete()
     response = redirect('/crud/get/users')
     return response
+    
+def map(request):
+    req = urllib.request.Request(url="https://datosabiertos.malaga.eu/recursos/aparcamientos/ocupappublicosmun/ocupappublicosmunfiware.json", headers={"User-Agent": "Mozilla/5.0"})
+    handler = urllib.request.urlopen(req)
+    data = json.loads(handler.read().decode())
+    locations = []
+    for aparcamiento in data:
+        locations.append(aparcamiento['location'])
+    points = []
+    for location in locations:
+        points.append(location.get('value').get('coordinates'))
+    context = {'points' : json.dumps(points)}
+    return render(request, "leaflet.html", context)

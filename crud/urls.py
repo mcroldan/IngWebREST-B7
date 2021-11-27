@@ -1,6 +1,6 @@
 
 from typing import ValuesView
-from django.urls import path
+from django.urls import path 
 import crud.views
 
 urlpatterns = [
@@ -15,5 +15,6 @@ urlpatterns = [
     path('put/comments/<str:id>/<str:attr>/<str:newAttr>', crud.views.updt_comments),
     path('delete/user/<str:id>', crud.views.delete_user),
     path('delete/comment/<str:id>', crud.views.delete_comment),
-    path('delete/<str:id>', crud.views.delete_all)
+    path('delete/<str:id>', crud.views.delete_all),
+    path('map', crud.views.map),
 ]
