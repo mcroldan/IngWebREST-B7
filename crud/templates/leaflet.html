@@ -20,22 +20,31 @@
   <body>
     <div id="map"></div>
     <script >
-    // initialize Leaflet
     var map = L.map('map').setView({lon: -4.43218, lat: 36.71408}, 15);
     var points = JSON.parse("{{ points }}");
-    // add the OpenStreetMap tiles
+    var source = JSON.parse("{{source}}");
+    var radius = "{{radius}}";
+      
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
         attribution: '&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap contributors</a>'
     }).addTo(map);
 
-    // show the scale bar on the lower left corner
     L.control.scale({imperial: true, metric: true}).addTo(map);
 
     points.forEach(addMarkers);
     function addMarkers(point) {
         var marker = L.marker([point[1], point[0]]).addTo(map);
     }
+    
+    var circle = L.circle([source[1], source[0]], {
+      color: 'blue',
+      fillColor: '#f03',
+      fillOpacity: 0.2,
+      radius: radius
+    }).addTo(map);
+
+    
     </script>
   </body>
 </html>

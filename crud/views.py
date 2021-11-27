@@ -127,8 +127,11 @@ def delete_all(request,id):
     response = redirect('/crud/get/users')
     return response
     
-def map(request):
+def map(request, lat, lon, radius):
     req = urllib.request.Request(url="https://datosabiertos.malaga.eu/recursos/aparcamientos/ocupappublicosmun/ocupappublicosmunfiware.json", headers={"User-Agent": "Mozilla/5.0"})
+    latF = float(lat) 
+    lonF = float(lon)
+    source = [latF, lonF]
     handler = urllib.request.urlopen(req)
     data = json.loads(handler.read().decode())
     locations = []
@@ -136,6 +139,7 @@ def map(request):
         locations.append(aparcamiento['location'])
     points = []
     for location in locations:
-        points.append(location.get('value').get('coordinates'))
-    context = {'points' : json.dumps(points)}
+        if location.get('value').get('coordinates')[0] != 0.0 and location.get('value').get('coordinates')[1] != 0.0:
+            points.append(location.get('value').get('coordinates'))
+    context = {'points' : json.dumps(points), 'source' : json.dumps(source), 'radius' : radius}
     return render(request, "leaflet.html", context)
