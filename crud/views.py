@@ -133,7 +133,8 @@ def get_json(request):
     data = json.loads(handler.read().decode())
     return data
     
-def get_aparcamientos(request, lat, lon, radius):
+def get_aparcamientos(request, lon, lat, radius): 
+    #distancia entre coordenada y aparcamiento < radio
     data = get_json(request)
 
     latF = float(lat) 
@@ -150,7 +151,7 @@ def get_aparcamientos(request, lat, lon, radius):
     context = {'points' : json.dumps(points), 'source' : json.dumps(source), 'radius' : radius}
     return render(request, "aparcamientos_radio.html", context)
 
-def get_aparcamiento_cercano(request, lat, lon):
+def get_aparcamiento_cercano(request, lon, lat):
     data = get_json(request)
     latF = float(lat) 
     lonF = float(lon)
@@ -161,10 +162,10 @@ def get_aparcamiento_cercano(request, lat, lon):
     point = []
     for location in locations:
         print(location)
-        latP = float(location.get('value').get('coordinates')[0])
-        lonP = float(location.get('value').get('coordinates')[1])
+        lonP = float(location.get('value').get('coordinates')[0])
+        latP = float(location.get('value').get('coordinates')[1])
         if len(point) == 0  :
-            point = [latP, lonP]
+            point = [lonP, latP]
         else:
             if latP != 0.0 and lonP != 0.0 and ((abs(latF - latP) + abs(lonF - lonP)) < (abs(latF - point[0]) + abs(lonF - point[1]))):
                 point = [latP, lonP]

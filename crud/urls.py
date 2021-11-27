@@ -16,6 +16,6 @@ urlpatterns = [
     path('delete/user/<str:id>', crud.views.delete_user),
     path('delete/comment/<str:id>', crud.views.delete_comment),
     path('delete/<str:id>', crud.views.delete_all),
-    path('map/<str:lat>/<str:lon>/<int:radius>', crud.views.get_aparcamientos),
-    path('map/<str:lat>/<str:lon>', crud.views.get_aparcamiento_cercano),
+    path('map/<str:lon>/<str:lat>/<int:radius>', crud.views.get_aparcamientos),
+    path('map/<str:lon>/<str:lat>', crud.views.get_aparcamiento_cercano),
 ]
