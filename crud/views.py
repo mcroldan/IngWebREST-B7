@@ -213,7 +213,6 @@ def get_aparcamiento_cercano(request, lon, lat):
     return render(request, "aparcamiento_mas_cercano.html", context)
 
 def get_atascos(request): 
-    #distancia entre coordenada y aparcamiento < radio
     data = get_json2(request)
 
     locations = []
@@ -237,10 +236,10 @@ def get_atasco_cercano(request, lon, lat):
         locations.append(data['features'][x]['geometry'])
     point = []
     for location in locations:
-        lonP = float(location.get('coordinates')[0])
-        latP = float(location.get('coordinates')[1])
+        lonP = float(location.get('coordinates')[1])
+        latP = float(location.get('coordinates')[0])
         if len(point) == 0  :
-            point = [lonP, latP]
+            point = [latP, lonP]
         else:
             if latP != 0.0 and lonP != 0.0 and ((abs(latF - latP) + abs(lonF - lonP)) < (abs(latF - point[0]) + abs(lonF - point[1]))):
                 point = [latP, lonP]
@@ -248,7 +247,6 @@ def get_atasco_cercano(request, lon, lat):
     return render(request, "atasco_cercano.html", context)           
 
 def get_atascos_dentro(request, lon, lat, radius): 
-    #distancia entre coordenada y aparcamiento < radio
     data = get_json2(request)
     latF = float(lat) 
     lonF = float(lon)

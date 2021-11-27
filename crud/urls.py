@@ -20,6 +20,6 @@ urlpatterns = [
     path('get/aparcamientos/radio/<str:lon>/<str:lat>/<int:radius>', crud.views.get_aparcamientos_dentro),
     path('get/aparcamientos/cerca/<str:lon>/<str:lat>', crud.views.get_aparcamiento_cercano),
     path('get/atascos', crud.views.get_atascos),
-    path('get/atasco/<str:lon>/<str:lat>', crud.views.get_atasco_cercano),
+    path('get/atascos/cerca/<str:lon>/<str:lat>', crud.views.get_atasco_cercano),
     path('get/atascos/radio/<str:lon>/<str:lat>/<int:radius>', crud.views.get_atascos_dentro),
 ]
