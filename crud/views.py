@@ -1,6 +1,8 @@
 from django.shortcuts import render
 from rest_framework import generics
+from rest_framework.response import Response
 from rest_framework.utils import serializer_helpers
+from rest_framework.views import APIView
 from .models import Usuario, Comentario
 from .serializers import UsuarioSerializer, ComentarioSerializer
 
@@ -24,3 +26,9 @@ class ComentarioList(generics.ListCreateAPIView):
 class ComentarioDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Comentario.objects.all()
     serializer_class = ComentarioSerializer
+
+class UsuarioComentarios(APIView):
+    def get(self, request, author):
+        comentarios = Comentario.objects.filter(author=author).order_by('-date')
+        serializer = ComentarioSerializer(comentarios, many=True)
+        return Response(serializer.data)

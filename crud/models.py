@@ -6,6 +6,9 @@ class Usuario(models.Model):
     surname = models.CharField(max_length=100)
     address = models.CharField(max_length=50)
 
+    def get_comments(self):
+       return Comentario.objects.filter( {'autor': self.id} )
+
 class Comentario(models.Model):
     author = models.ForeignKey(Usuario, on_delete=models.CASCADE)
     coment = models.CharField(max_length=200)
