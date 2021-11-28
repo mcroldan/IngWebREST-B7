@@ -1,0 +1,100 @@
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <style>
+      html, body {
+        height: 100%;
+        padding: 0;
+        margin: 0;
+      }
+      #map {
+        /* configure the size of the map */
+        width: 100%;
+        height: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="map"></div>
+    <script >
+      
+      var points = "";
+      var source = "";
+      var point = "";
+      var radius = "";
+      var datos = "";
+      try{points = JSON.parse("{{ points }}");}catch(e){}
+      try{source = JSON.parse("{{ source }}");}catch(e){}
+      try{radius = "{{ radius }}";}catch(e){}
+      try{point = JSON.parse("{{ point }}");}catch(e){}
+      try{datos = "{{ datos }}";}catch(e){}
+
+      if(source != ""){ 
+        var map = L.map('map').setView({lon: source[0], lat: source[1]}, 15);
+        var source_marker = L.marker([source[1], source[0]]).addTo(map);
+      }else{
+        var map = L.map('map').setView({lon: -4.43218, lat: 36.71408}, 15); //coordenadas centradas en Málaga para poder visualizar métodos sin coordendas establecidas
+      }
+        
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          maxZoom: 19,
+          attribution: '&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap contributors</a>'
+      }).addTo(map);
+
+      L.control.scale({imperial: true, metric: true}).addTo(map);
+
+      var parkingIcon = new L.icon({
+          iconUrl:
+            "http://medifutur.com/wp-content/uploads/2015/08/parking-icono1.png",
+          
+          iconSize: [32, 32],
+          iconAnchor: [12, 41],
+          popupAnchor: [1, -34],
+          shadowSize: [41, 41],
+        });
+
+      var fenceIcon = new L.icon({
+        iconUrl:
+          "http://download.seaicons.com/download/i50023/mpt1st/construction/mpt1st-construction-traffic-cone.ico",
+      
+        iconSize: [32, 32],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34],
+        shadowSize: [41, 41],
+      });
+
+      if(point == ""){
+        
+        points.forEach(addMarkers);
+        function addMarkers(p) {
+          if(datos == "aparcamientos"){
+            var points_marker = L.marker([p[1], p[0]], { icon: parkingIcon }).addTo(map);
+          }else if(datos == "atascos"){
+            var points_marker = L.marker([p[1], p[0]], { icon: fenceIcon }).addTo(map);
+          }
+          
+        }
+
+        if(radius != ""){
+          var circle = L.circle([source[1], source[0]], {
+          color: 'blue',
+          fillColor: '#f03',
+          fillOpacity: 0.2,
+          radius: radius
+          }).addTo(map);
+        }
+
+      }else{
+        if(datos == "aparcamientos"){
+          var point_marker = L.marker([point[1], point[0]], {icon: parkingIcon}).addTo(map);
+        }else if(datos == "atascos"){
+          var point_marker = L.marker([point[1], point[0]], {icon: fenceIcon}).addTo(map);
+        }
+      }
+    
+    </script>
+  </body>
+</html>

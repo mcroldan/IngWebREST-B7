@@ -19,5 +19,6 @@ from django.urls.conf import include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('crud.urls'))
+    path('crud/', include('crud.urls')),
+    path('datos_abiertos/', include('datos_abiertos.urls'))
 ]
