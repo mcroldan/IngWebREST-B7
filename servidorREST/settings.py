@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'crud',
     'datos_abiertos',
+    'drf_yasg',
 ]
 
 MIDDLEWARE = [
