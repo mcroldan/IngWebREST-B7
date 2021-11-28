@@ -26,8 +26,6 @@
     <script>
       var map = L.map("map").setView({ lon: -4.43218, lat: 36.71408 }, 15);
       var points = JSON.parse("{{ points }}");
-      var source = JSON.parse("{{source}}");
-      var radius = "{{radius}}";
 
       L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
         maxZoom: 19,
@@ -40,8 +38,7 @@
       var fenceIcon = new L.icon({
         iconUrl:
           "http://download.seaicons.com/download/i50023/mpt1st/construction/mpt1st-construction-traffic-cone.ico",
-        shadowUrl:
-          "http://download.seaicons.com/download/i50023/mpt1st/construction/mpt1st-construction-traffic-cone.ico",
+        
         iconSize: [32, 32],
         iconAnchor: [12, 41],
         popupAnchor: [1, -34],
@@ -53,12 +50,7 @@
         var marker = L.marker([point[1], point[0]], { icon: fenceIcon }).addTo(map);
       }
 
-      var circle = L.circle([source[1], source[0]], {
-        color: "blue",
-        fillColor: "#f03",
-        fillOpacity: 0.2,
-        radius: radius,
-      }).addTo(map);
+      
     </script>
   </body>
 </html>

@@ -32,9 +32,19 @@
 
     L.control.scale({imperial: true, metric: true}).addTo(map);
 
+    var parkingIcon = new L.icon({
+        iconUrl:
+          "http://medifutur.com/wp-content/uploads/2015/08/parking-icono1.png",
+        
+        iconSize: [32, 32],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34],
+        shadowSize: [41, 41],
+      });
+
     points.forEach(addMarkers);
     function addMarkers(point) {
-        var marker = L.marker([point[1], point[0]]).addTo(map);
+        var marker = L.marker([point[1], point[0]], { icon: parkingIcon }).addTo(map);
     }
     
     var circle = L.circle([source[1], source[0]], {
@@ -44,6 +54,7 @@
       radius: radius
     }).addTo(map);
 
+    var marker = L.marker([source[1], source[0]]).addTo(map);
     
     </script>
   </body>
