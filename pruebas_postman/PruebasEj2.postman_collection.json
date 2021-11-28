@@ -1,0 +1,287 @@
+{
+	"info": {
+		"_postman_id": "edd4e4e5-7856-49ec-915b-74603253ddbe",
+		"name": "PruebasEj2",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "GET Aparcamientos",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Every doc has Point\", function () {\r",
+							"    jsonData = pm.response.json()\r",
+							"    jsonData.forEach(function(valor, indice, array) {\r",
+							"        pm.expect(valor['value']).to.have.property('coordinates');\r",
+							"    });\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url_datos}}/json_aparcamientos",
+					"host": [
+						"{{url_datos}}"
+					],
+					"path": [
+						"json_aparcamientos"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET Atascos",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Every doc has Point\", function () {\r",
+							"    jsonData = pm.response.json();\r",
+							"    jsonData.forEach(function(valor, indice, array) {\r",
+							"        pm.expect(valor).to.have.property('coordinates');\r",
+							"    });\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url_datos}}/json_atascos",
+					"host": [
+						"{{url_datos}}"
+					],
+					"path": [
+						"json_atascos"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET Aparcamientos Radio",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Every doc has Point\", function () {\r",
+							"    jsonData = pm.response.json();\r",
+							"    jsonData.forEach(function(valor, indice, array) {\r",
+							"        pm.expect(JSON.parse(valor)['value']).to.have.property('coordinates');\r",
+							"    });\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Every point inside radio\"), function () {\r",
+							"    jsonData = pm.response.json();\r",
+							"    var origen = jsonData[0]['value']['coordinates'];\r",
+							"    jsonData.forEach(function(valor, indice, array) {\r",
+							"        var coordenadas = valor['value']['coordinates'];\r",
+							"\r",
+							"        pm.expect(measure(origen[0], origen[1], coordenadas[0], coordenadas[1]) <= pm.environment.get('radio')).to.be.true;\r",
+							"    });\r",
+							"}\r",
+							"\r",
+							"function measure(lat1, lon1, lat2, lon2){  // generally used geo measurement function\r",
+							"    var R = 6378.137; // Radius of earth in KM\r",
+							"    var dLat = lat2 * Math.PI / 180 - lat1 * Math.PI / 180;\r",
+							"    var dLon = lon2 * Math.PI / 180 - lon1 * Math.PI / 180;\r",
+							"    var a = Math.sin(dLat/2) * Math.sin(dLat/2) +\r",
+							"    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *\r",
+							"    Math.sin(dLon/2) * Math.sin(dLon/2);\r",
+							"    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));\r",
+							"    var d = R * c;\r",
+							"    return d * 1000; // meters\r",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url_datos}}/json_aparcamientos/radio/{{longitud}}/{{latitud}}/{{radio}}",
+					"host": [
+						"{{url_datos}}"
+					],
+					"path": [
+						"json_aparcamientos",
+						"radio",
+						"{{longitud}}",
+						"{{latitud}}",
+						"{{radio}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET Atascos Radio",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Every doc has Point\", function () {\r",
+							"    jsonData = pm.response.json();\r",
+							"    jsonData.forEach(function(valor, indice, array) {\r",
+							"        pm.expect(valor).to.have.property('coordinates');\r",
+							"    });\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Every point inside radio\"), function () {\r",
+							"    jsonData = pm.response.json();\r",
+							"    var origen = jsonData[0]['coordinates'];\r",
+							"    jsonData.forEach(function(valor, indice, array) {\r",
+							"        var coordenadas = valor['coordinates'];\r",
+							"\r",
+							"        pm.expect(measure(origen[0], origen[1], coordenadas[0], coordenadas[1]) <= pm.environment.get('radio')).to.be.true;\r",
+							"    });\r",
+							"}\r",
+							"\r",
+							"function measure(lat1, lon1, lat2, lon2){  // generally used geo measurement function\r",
+							"    var R = 6378.137; // Radius of earth in KM\r",
+							"    var dLat = lat2 * Math.PI / 180 - lat1 * Math.PI / 180;\r",
+							"    var dLon = lon2 * Math.PI / 180 - lon1 * Math.PI / 180;\r",
+							"    var a = Math.sin(dLat/2) * Math.sin(dLat/2) +\r",
+							"    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *\r",
+							"    Math.sin(dLon/2) * Math.sin(dLon/2);\r",
+							"    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));\r",
+							"    var d = R * c;\r",
+							"    return d * 1000; // meters\r",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url_datos}}/json_atascos/radio/{{longitud}}/{{latitud}}/{{radio}}",
+					"host": [
+						"{{url_datos}}"
+					],
+					"path": [
+						"json_atascos",
+						"radio",
+						"{{longitud}}",
+						"{{latitud}}",
+						"{{radio}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET Aparcamiento mas Cercano",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Every doc has Point\", function () {\r",
+							"    jsonData = pm.response.json()\r",
+							"    pm.expect(typeof jsonData[0]).to.eq('number');\r",
+							"    pm.expect(typeof jsonData[1]).to.eq('number');\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url_datos}}/json_aparcamientos/cerca/{{longitud}}/{{latitud}}",
+					"host": [
+						"{{url_datos}}"
+					],
+					"path": [
+						"json_aparcamientos",
+						"cerca",
+						"{{longitud}}",
+						"{{latitud}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET Atasco mas Cercano",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Every doc has Point\", function () {\r",
+							"    jsonData = pm.response.json();\r",
+							"    pm.expect(typeof jsonData[0]).to.eq('number');\r",
+							"    pm.expect(typeof jsonData[1]).to.eq('number');\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url_datos}}/json_atascos/cerca/{{longitud}}/{{latitud}}",
+					"host": [
+						"{{url_datos}}"
+					],
+					"path": [
+						"json_atascos",
+						"cerca",
+						"{{longitud}}",
+						"{{latitud}}"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

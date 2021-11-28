@@ -1,0 +1,498 @@
+{
+	"info": {
+		"_postman_id": "93de98ea-a582-41e5-956e-c62114f54e45",
+		"name": "PruebasEj1",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "GET Usuarios",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Francisco Bono has id 1\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData[0].name + \" \" + jsonData[0].surname).to.eql(\"Francisco Bono\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Manuel Gomez lives in Calle pepito\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData[1].address).to.eql(\"Calle pepito\")\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/usuario/",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"usuario",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST Usuarios",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {\r",
+							"    pm.expect(pm.response.code).to.be.oneOf([201, 202]);\r",
+							"    id_nueva = JSON.parse(pm.response.text())['id']\r",
+							"\r",
+							"    pm.environment.set(\"id\", id_nueva);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n        \"name\": \"{{$randomFirstName}}\",\r\n        \"surname\" : \"{{$randomLastName}}\",\r\n        \"address\": \"{{$randomStreetAddress}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/usuario/",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"usuario",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PUT Usuarios",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\":\"{{$randomFirstName}}\",\r\n    \"surname\":\"{{$randomLastName}}\",\r\n    \"address\":\"{{$randomStreetAddress}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/usuario/{{id}}/",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"usuario",
+						"{{id}}",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET Comentarios",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Id first comment is 1\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData[0].id).to.eql(1);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Id is autoincrementing\", function (){\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData[jsonData.length - 1].id = jsonData.length)\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/comentario/",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"comentario",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST Comentarios",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {\r",
+							"    pm.expect(pm.response.code).to.be.oneOf([201, 202]);\r",
+							"\r",
+							"    id_nueva = JSON.parse(pm.response.text())['id']\r",
+							"\r",
+							"    pm.environment.set(\"id_comment\", id_nueva);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"author\": \"{{id}}\",\r\n    \"coment\": \"{{$randomPhrase}}\",\r\n    \"date\": \"2077-02-03\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/comentario/",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"comentario",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PUT Comentarios",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"author\": {{id}},\r\n    \"coment\": \"{{$randomPhrase}}\",\r\n    \"date\": \"1971-01-01\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/comentario/{{id_comment}}/",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"comentario",
+						"{{id_comment}}",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET Usuario por ID",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Query is filtered\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(typeof jsonData).to.eq('object')\r",
+							"})\r",
+							"\r",
+							"pm.test(\"Query is correct\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(String(jsonData.id)).to.eql(String(pm.environment.get(\"id\")));\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/usuario/{{id}}",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"usuario",
+						"{{id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET Usuarios por String",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Query is filtered\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.length).to.lte(jsonData[jsonData.length-1].id)\r",
+							"})\r",
+							"\r",
+							"pm.test(\"Query is correct\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    jsonData.forEach(function(valor, indice, array) {\r",
+							"        pm.expect(valor.name.toUpperCase() + valor.surname.toUpperCase()).to.include(\"B\")\r",
+							"    });\r",
+							"    \r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/usuario/B",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"usuario",
+						"B"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET Comentarios de Usuario",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Query is filtered\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.length).to.lte(jsonData[jsonData.length-1].id)\r",
+							"})\r",
+							"\r",
+							"pm.test(\"Query is correct\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    jsonData.forEach(function(valor, indice, array) {\r",
+							"        pm.expect(String(valor.author)).to.eq(String(pm.environment.get(\"id\")))\r",
+							"    });   \r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/usuario/{{id}}/comentario",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"usuario",
+						"{{id}}",
+						"comentario"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET Comentarios anteriores a Fecha",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Query is filtered\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.length).to.lte(jsonData[jsonData.length-1].id)\r",
+							"})\r",
+							"\r",
+							"pm.test(\"Query is correct\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    jsonData.forEach(function(valor, indice, array) {\r",
+							"        pm.expect(Date.parse(valor.date)).to.lt(Date.parse(\"2022-07-03\"))\r",
+							"    });   \r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/comentario/2022-07-03",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"comentario",
+						"2022-07-03"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DEL Usuario por ID",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/usuario/{{id}}/",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"usuario",
+						"{{id}}",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DEL Comentarios",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/comentario/{{id_comment}}/",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"comentario",
+						"{{id_comment}}",
+						""
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
