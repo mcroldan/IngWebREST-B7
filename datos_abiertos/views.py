@@ -36,8 +36,8 @@ def get_aparcamientos(request):
         lat_aparcamiento = float(location.get('value').get('coordinates')[0])
         if lon_aparcamiento != 0.0 and lat_aparcamiento != 0.0:
             points.append([lat_aparcamiento,lon_aparcamiento])
-    context = {'points' : json.dumps(points)}
-    return render(request, "aparcamientos.html", context)
+    context = {'points' : json.dumps(points), 'datos' : 'aparcamientos'}
+    return render(request, "maps.html", context)
 
 def measure(lat1, lon1, lat2, lon2):  # generally used geo measurement function
     R = 6378.137; # Radius of earth in KM
@@ -73,8 +73,8 @@ def get_aparcamientos_dentro(request, lon, lat, radius):
         lat_aparcamiento = float(location.get('value').get('coordinates')[0])
         if lon_aparcamiento != 0.0 and lat_aparcamiento != 0.0 and dentro_perimetro(float(lon_aparcamiento),float(lat_aparcamiento),source,radius):
             points.append([lat_aparcamiento,lon_aparcamiento])
-    context = {'points' : json.dumps(points), 'source' : json.dumps(source), 'radius' : radius}
-    return render(request, "aparcamientos_radio.html", context)
+    context = {'points' : json.dumps(points), 'source' : json.dumps(source), 'radius' : radius, 'datos' : 'aparcamientos'}
+    return render(request, "maps.html", context)
 
 def get_aparcamiento_cercano(request, lon, lat):
     data = get_json(request)
@@ -94,8 +94,8 @@ def get_aparcamiento_cercano(request, lon, lat):
         else:
             if lat_aparcamiento != 0.0 and lon_aparcamiento != 0.0 and ((abs(latF - lat_aparcamiento) + abs(lonF - lon_aparcamiento)) < (abs(latF - point[0]) + abs(lonF - point[1]))):
                 point = [lat_aparcamiento, lon_aparcamiento]
-    context = {'point' : json.dumps(point), 'source' : json.dumps(source)}
-    return render(request, "aparcamiento_mas_cercano.html", context)
+    context = {'point' : json.dumps(point), 'source' : json.dumps(source), 'datos' : 'aparcamientos'}
+    return render(request, "maps.html", context)
 
 def get_atascos(request): 
     data = get_json2(request)
@@ -107,8 +107,8 @@ def get_atascos(request):
     for location in locations:
         if location.get('coordinates')[0] != 0.0 and location.get('coordinates')[1] != 0.0:
             points.append(location.get('coordinates'))
-    context = {'points' : json.dumps(points)}
-    return render(request, "atascos.html", context)
+    context = {'points' : json.dumps(points), 'datos' : 'atascos'}
+    return render(request, "maps.html", context)
 
 def get_atasco_cercano(request, lon, lat):
     data = get_json2(request)
@@ -128,8 +128,8 @@ def get_atasco_cercano(request, lon, lat):
         else:
             if latP != 0.0 and lonP != 0.0 and ((abs(latF - latP) + abs(lonF - lonP)) < (abs(latF - point[0]) + abs(lonF - point[1]))):
                 point = [latP, lonP]
-    context = {'point' : json.dumps(point), 'source' : json.dumps(source)}
-    return render(request, "atasco_cercano.html", context)           
+    context = {'point' : json.dumps(point), 'source' : json.dumps(source), 'datos' : 'atascos'}
+    return render(request, "maps.html", context)           
 
 def get_atascos_dentro(request, lon, lat, radius): 
     data = get_json2(request)
@@ -146,5 +146,5 @@ def get_atascos_dentro(request, lon, lat, radius):
         lat_aparcamiento = float(location.get('coordinates')[0])
         if lon_aparcamiento != 0.0 and lat_aparcamiento != 0.0 and dentro_perimetro(float(lon_aparcamiento),float(lat_aparcamiento),source,radius):
             points.append([lat_aparcamiento,lon_aparcamiento])
-    context = {'points' : json.dumps(points), 'source' : json.dumps(source), 'radius' : radius}
-    return render(request, "atascos_radio.html", context)
+    context = {'points' : json.dumps(points), 'source' : json.dumps(source), 'radius' : radius, 'datos' : 'atascos'}
+    return render(request, "maps.html", context)
