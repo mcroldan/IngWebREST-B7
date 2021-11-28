@@ -1,127 +1,51 @@
-from os import name
-from django.http.response import HttpResponse
 from django.shortcuts import render
-from pymongo.message import delete
-from crud.utils import DBClientMongo
-from IwebDjango.settings import DB_NAME, DEBUG
-from crud.models import Usuario
-from crud.models import Comentario
-from bson.objectid import ObjectId
-import ast
-from django.shortcuts import redirect
+from rest_framework import generics
+from rest_framework.response import Response
+from rest_framework.utils import serializer_helpers
+from rest_framework.views import APIView
+from .models import Usuario, Comentario
+from .serializers import UsuarioSerializer, ComentarioSerializer
+from django.db.models import Q
+import datetime
 
 # Create your views here.
+#Read-Write: Lista de usuarios
+class UsuarioList(generics.ListCreateAPIView):
+    queryset = Usuario.objects.all()
+    serializer_class = UsuarioSerializer
 
-def get_all_ids_cursor(_tableName):
-    atributos = {'_id'}
-    if _tableName == 'Comentario':
-        atributos = {'_id', 'autor'}
+#Read-Write-Delete para un usuario
+class UsuarioDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Usuario.objects.all()
+    serializer_class = UsuarioSerializer
 
-    bd = DBClientMongo(DB_NAME, _tableName)
-    cursor = bd.find({},atributos)
-    bd.close()
-    return cursor
+#Read-Write: Lista de comentarios
+class ComentarioList(generics.ListCreateAPIView):
+    queryset = Comentario.objects.all()
+    serializer_class = ComentarioSerializer
 
-def get_all_users(request):
-    """usuarios = []
-    for doc in get_all_ids_cursor('Usuario'):
-        usuarios.append(Usuario.crearConId(doc['_id']))
+#Read-Write-Delete para un comentario
+class ComentarioDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Comentario.objects.all()
+    serializer_class = ComentarioSerializer
 
-    users = []
-    for user in usuarios:
-        users.append(user.serialize())
-    
-    json = ', '.join(users)
-    json = '{' + json + '}'"""
-    bd = DBClientMongo(DB_NAME, 'Usuario')
-    json = bd.find()
-    bd.close()
-    return HttpResponse(json)
+class UsuarioComentarios(APIView):
+    def get(self, request, author):
+        comentarios = Comentario.objects.filter(author=author).order_by('-date')
+        serializer = ComentarioSerializer(comentarios, many=True)
+        return Response(serializer.data)
 
-def get_all_comments(request):
-    """comentarios = []
+class UsuarioPorNombre(APIView):
+    def get(self, request, name):
+        usuario = Usuario.objects.filter(Q(name__icontains=name) | Q(surname__icontains=name))
+        serializer = UsuarioSerializer(usuario, many=True)
+        return Response(serializer.data)
 
-    for doc in get_all_ids_cursor('Comentario'):
-        comentarios.append(Comentario.crearConId(doc['_id'], Usuario.crearConId(doc['autor'])))
-
-    comments = []
-    for comment in comentarios:
-        comments.append(comment.serialize())
-    
-    json = ', '.join(comments)
-    json = '{' + json + '}'
-"""
-    bd = DBClientMongo(DB_NAME, 'Comentario')
-    json = bd.find()
-    bd.close()
-    return HttpResponse(json)
-
-def get_user(request, var):
-    user = Usuario.crearConId(var)
-    json = user.serialize()
-
-    return HttpResponse(json)
-
-def get_comment(request, var):
-    comment = Comentario.crearConId(var)
-    return HttpResponse(comment.serialize())
-
-def get_user_comments(request,var):
-    bd = DBClientMongo(DB_NAME, 'Comentario')
-    cursor = bd.find( {'autor': ObjectId(var)})
-    bd.close()
-    json = []
-    for doc in cursor:
-        json.append(Comentario.crearConId(doc['_id']).serialize())
-    return HttpResponse(json)
-
-def create_user(request, name, surname, address):
-    array = surname.split(',')
-    usuario = Usuario(name, array, address) 
-    response = redirect('/crud/get/users') 
-    return response 
-
-def create_comment(request, autor, comentario, fecha):
-    comentario = Comentario(autor, comentario, fecha) 
-    response = redirect('/crud/get/comments') 
-    return response
-
-def updt_users(request, id, attr, newAttr):
-    user = Usuario.crearConId(id)
-
-    if (attr == 'name'):
-        user.setName(newAttr)
-    elif (attr == 'surname'):
-        array = newAttr.split(',')
-        user.setSurname(array)
-    elif (attr == 'address'):
-        user.setAddress(newAttr)
-    return HttpResponse(newAttr)
-
-def updt_comments(request, id, attr, newAttr):
-    comment = Comentario.crearConId(id)
-
-    if (attr == 'comentario'):
-        comment.setComentario(newAttr)
-    return HttpResponse(comment.comentario)
-
-def delete_user(request,id):
-    user = Usuario.crearConId(id)
-    user.delete()
-    response = redirect('/crud/get/users')
-    return response
-
-def delete_comment(request,id):
-    comment = Comentario.crearConId(id)
-    comment.delete()
-    response = redirect('/crud/get/comments')
-    return response
-
-def delete_all(request,id):
-    if(id == 'albaricoque83'):
-        bd = DBClientMongo(DB_NAME, 'Usuario')
-        bd.delete()
-        bd.cambiar_coleccion('Comentario')
-        bd.delete()
-    response = redirect('/crud/get/users')
-    return response
+class ComentariosFecha(APIView):
+    """Format 2021-12-31"""
+    def get(self, request, date):
+        dateArray = date.split('-')
+        datetime.date(int(dateArray[0]), int(dateArray[1]), int(dateArray[2]))
+        comentarios = Comentario.objects.filter(date__lte=date).order_by('-date')
+        serializer = ComentarioSerializer(comentarios, many=True)
+        return Response(serializer.data)
