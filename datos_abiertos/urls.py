@@ -1,5 +1,4 @@
 
-from typing import ValuesView
 from django.urls import path 
 import datos_abiertos.views
 

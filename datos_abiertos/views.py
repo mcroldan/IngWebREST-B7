@@ -4,29 +4,23 @@ from django.shortcuts import render
 
 from os import name
 from django.shortcuts import render
-from IwebDjango.settings import DB_NAME, DEBUG
-from django.shortcuts import redirect
-from datos_abiertos import templates
 import urllib.request
 import json
 import math
 
+URL_APARCAMIENTOS = "https://datosabiertos.malaga.eu/recursos/aparcamientos/ocupappublicosmun/ocupappublicosmunfiware.json"
+URL_ATASCOS = "https://datosabiertos.malaga.eu/recursos/transporte/trafico/da_cortesTrafico-4326.geojson"
+
 # Create your views here.
 
-def get_json(request):
-    req = urllib.request.Request(url="https://datosabiertos.malaga.eu/recursos/aparcamientos/ocupappublicosmun/ocupappublicosmunfiware.json", headers={"User-Agent": "Mozilla/5.0"})
-    handler = urllib.request.urlopen(req)
-    data = json.loads(handler.read().decode())
-    return data
-
-def get_json2(request):
-    req = urllib.request.Request(url="https://datosabiertos.malaga.eu/recursos/transporte/trafico/da_cortesTrafico-4326.geojson", headers={"User-Agent": "Mozilla/5.0"})
+def get_json(request,url):
+    req = urllib.request.Request(url=url, headers={"User-Agent": "Mozilla/5.0"})
     handler = urllib.request.urlopen(req)
     data = json.loads(handler.read().decode())
     return data
 
 def get_aparcamientos(request): 
-    data = get_json(request)
+    data = get_json(request,URL_APARCAMIENTOS)
     points = []
     locations = []
     for aparcamiento in data:
@@ -58,7 +52,7 @@ def dentro_perimetro(lon_aparcamiento,lat_aparcamiento,source,radius):
     return dentro
     
 def get_aparcamientos_dentro(request, lon, lat, radius): 
-    data = get_json(request)
+    data = get_json(request,URL_APARCAMIENTOS)
 
     latF = float(lat) 
     lonF = float(lon)
@@ -77,7 +71,7 @@ def get_aparcamientos_dentro(request, lon, lat, radius):
     return render(request, "maps.html", context)
 
 def get_aparcamiento_cercano(request, lon, lat):
-    data = get_json(request)
+    data = get_json(request,URL_APARCAMIENTOS)
     latF = float(lat) 
     lonF = float(lon)
     source = [latF, lonF]
@@ -98,7 +92,7 @@ def get_aparcamiento_cercano(request, lon, lat):
     return render(request, "maps.html", context)
 
 def get_atascos(request): 
-    data = get_json2(request)
+    data = get_json(request,URL_ATASCOS)
 
     locations = []
     for x in range(data['totalFeatures']):
@@ -111,7 +105,7 @@ def get_atascos(request):
     return render(request, "maps.html", context)
 
 def get_atasco_cercano(request, lon, lat):
-    data = get_json2(request)
+    data = get_json(request,URL_ATASCOS)
     latF = float(lat) 
     lonF = float(lon)
     source = [latF, lonF]
@@ -132,7 +126,7 @@ def get_atasco_cercano(request, lon, lat):
     return render(request, "maps.html", context)           
 
 def get_atascos_dentro(request, lon, lat, radius): 
-    data = get_json2(request)
+    data = get_json(request,URL_ATASCOS)
     latF = float(lat) 
     lonF = float(lon)
     source = [latF, lonF]
